@@ -1,1 +1,5 @@
 This folder contains testing exercises showcasing test planning derived from software requirements .
+
+User Story Review Task.pdf: This document provides a detailed review of a user story, where I critically analyzed the content to identify any ambiguities or missing details. I addressed key questions about the clarity of requirements and acceptance criteria, provided my own version of the acceptance criteria, and outlined a comprehensive test approach. The document also includes a breakdown of which tests should be automated, the testing levels required, and the roles responsible for implementing the automated tests.
+
+Requirements - Test Case Analysis Exercise.pdf: In this document, I performed an in-depth analysis of a simple web application. I created a broad set of test cases to ensure comprehensive coverage of the feature, identified potential bugs and areas requiring clarification, and prioritized which test cases should be automated. Additionally, I provided two automated test cases implemented using Cypress to demonstrate how the functionality could be tested in an automated environment.
