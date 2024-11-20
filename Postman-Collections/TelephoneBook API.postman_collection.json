@@ -1,0 +1,2097 @@
+{
+	"info": {
+		"_postman_id": "6a744759-963a-463c-ae8a-76e9594d2937",
+		"name": "TelephoneBook API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16642182"
+	},
+	"item": [
+		{
+			"name": "Ping",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Validate that the request was authorized and responded with status 200\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Optionally, check the response body if needed\r",
+							"pm.test(\"Response should be pong\", function () {\r",
+							"    pm.expect(pm.response.text()).to.eql(\"pong\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/ping",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"ping"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find All",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Define the expected list of users without checking IDs\r",
+							"const expectedUsers = [\r",
+							"    {\r",
+							"        \"firstName\": \"Max\",\r",
+							"        \"lastName\": \"Mustermann\",\r",
+							"        \"telephones\": [\r",
+							"            {\r",
+							"                \"countyCode\": \"AT\",\r",
+							"                \"number\": \"0664123456789\"\r",
+							"            }\r",
+							"        ]\r",
+							"    },\r",
+							"    {\r",
+							"        \"firstName\": \"Susi\",\r",
+							"        \"lastName\": \"Sorglos\",\r",
+							"        \"telephones\": []\r",
+							"    },\r",
+							"    {\r",
+							"        \"firstName\": \"Robert\",\r",
+							"        \"lastName\": \"Space\",\r",
+							"        \"telephones\": []\r",
+							"    }\r",
+							"];\r",
+							"\r",
+							"// Parse the response body as JSON\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"// Validate the status code\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Validate that each expected user is present in the response without checking IDs\r",
+							"pm.test(\"Expected users are present with correct details excluding IDs\", function () {\r",
+							"    expectedUsers.forEach(expectedUser => {\r",
+							"        // Find the user in the response with matching firstName and lastName\r",
+							"        const returnedUser = responseData.find(user => user.firstName === expectedUser.firstName && user.lastName === expectedUser.lastName);\r",
+							"        pm.expect(returnedUser).to.be.an('object');  // Ensure that a matching user is found\r",
+							"\r",
+							"        // Validate firstName and lastName\r",
+							"        pm.expect(returnedUser.firstName).to.eql(expectedUser.firstName);\r",
+							"        pm.expect(returnedUser.lastName).to.eql(expectedUser.lastName);\r",
+							"\r",
+							"        // Validate telephones\r",
+							"        pm.expect(returnedUser.telephones.length).to.eql(expectedUser.telephones.length);\r",
+							"        for (let j = 0; j < expectedUser.telephones.length; j++) {\r",
+							"            const expectedTelephone = expectedUser.telephones[j];\r",
+							"            const returnedTelephone = returnedUser.telephones[j];\r",
+							"\r",
+							"            // Validate telephone details without checking IDs\r",
+							"            pm.expect(returnedTelephone.countyCode).to.eql(expectedTelephone.countyCode);\r",
+							"            pm.expect(returnedTelephone.number).to.eql(expectedTelephone.number);\r",
+							"        }\r",
+							"    });\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/person/list",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"person",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find By First Name",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"// Define random data for creating a new person\r",
+							"const randomFirstName = 'TestUser_' + Math.floor(Math.random() * 1000);  // Random first name\r",
+							"const randomLastName = 'RandomLastName';  // Fixed last name\r",
+							"const newPerson = {\r",
+							"    firstName: randomFirstName,\r",
+							"    lastName: randomLastName,\r",
+							"    telephones: [\r",
+							"        {\r",
+							"            countyCode: \"AT\",\r",
+							"            number: \"123456789\"\r",
+							"        }\r",
+							"    ]\r",
+							"};\r",
+							"\r",
+							"// Send a request to create a new person\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get('baseUrl') + '/person',\r",
+							"    method: 'POST',\r",
+							"    header: {\r",
+							"        'Authorization': 'Basic ' + btoa(username + ':' + password),\r",
+							"        'Content-Type': 'application/json'\r",
+							"    },\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify(newPerson)\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    if (err) {\r",
+							"        console.error('Failed to create a new person:', err);\r",
+							"    } else {\r",
+							"        console.log('Created person:', res.json());\r",
+							"        const createdPerson = res.json();\r",
+							"\r",
+							"        // Set the first name of the created person as a collection variable\r",
+							"        pm.collectionVariables.set('firstName', createdPerson.firstName);\r",
+							"    }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Retrieve the firstName set in the collection variable\r",
+							"const firstName = pm.collectionVariables.get('firstName');\r",
+							"\r",
+							"// Parse the response body as JSON\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"// Validate the status code\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Validate that the returned user matches the created user\r",
+							"pm.test(\"Returned user matches the created user\", function () {\r",
+							"    pm.expect(responseData).to.be.an('object');  // Ensure that a person object is returned\r",
+							"    pm.expect(responseData.firstName).to.eql(firstName);  // Check the first name matches\r",
+							"\r",
+							"    // Validate last name and telephone details\r",
+							"    pm.expect(responseData.lastName).to.eql('RandomLastName');\r",
+							"    pm.expect(responseData.telephones.length).to.eql(1);\r",
+							"    \r",
+							"    const telephone = responseData.telephones[0];\r",
+							"    pm.expect(telephone.countyCode).to.eql(\"AT\");\r",
+							"    pm.expect(telephone.number).to.eql(\"123456789\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/person/findByFirstName/{{firstName}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"person",
+						"findByFirstName",
+						"{{firstName}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find By Last Name",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"// Define random data for creating a new person\r",
+							"const randomFirstName = 'TestUser_' + Math.floor(Math.random() * 1000);  // Random first name\r",
+							"const randomLastName = 'RandomLastName_' + Math.floor(Math.random() * 1000);  // Random last name\r",
+							"const newPerson = {\r",
+							"    firstName: randomFirstName,\r",
+							"    lastName: randomLastName,\r",
+							"    telephones: [\r",
+							"        {\r",
+							"            countyCode: \"AT\",\r",
+							"            number: \"123456789\"\r",
+							"        }\r",
+							"    ]\r",
+							"};\r",
+							"\r",
+							"// Send a request to create a new person\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get('baseUrl') + '/person',\r",
+							"    method: 'POST',\r",
+							"    header: {\r",
+							"        'Authorization': 'Basic ' + btoa(username + ':' + password),\r",
+							"        'Content-Type': 'application/json'\r",
+							"    },\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify(newPerson)\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    if (err) {\r",
+							"        console.error('Failed to create a new person:', err);\r",
+							"    } else {\r",
+							"        console.log('Created person:', res.json());\r",
+							"        const createdPerson = res.json();\r",
+							"\r",
+							"        // Set the last name of the created person as a collection variable\r",
+							"        pm.collectionVariables.set('lastName', createdPerson.lastName);\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Retrieve the lastName set in the collection variable\r",
+							"const lastName = pm.collectionVariables.get('lastName');\r",
+							"\r",
+							"// Parse the response body as JSON\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"// Validate the status code\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Validate that the returned user matches the created user\r",
+							"pm.test(\"Returned user matches the created user\", function () {\r",
+							"    pm.expect(responseData).to.be.an('object');  // Ensure that a person object is returned\r",
+							"    pm.expect(responseData.lastName).to.eql(lastName);  // Check the last name matches\r",
+							"\r",
+							"    // Validate first name and telephone details\r",
+							"    pm.expect(responseData.firstName).to.include('TestUser_');  // Check that the first name contains 'TestUser_'\r",
+							"    pm.expect(responseData.telephones.length).to.eql(1);\r",
+							"    \r",
+							"    const telephone = responseData.telephones[0];\r",
+							"    pm.expect(telephone.countyCode).to.eql(\"AT\");\r",
+							"    pm.expect(telephone.number).to.eql(\"123456789\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/person/findByLastName/{{lastName}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"person",
+						"findByLastName",
+						"{{lastName}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find By Phone Number",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"\r",
+							"// Define random data for creating a new person\r",
+							"const randomFirstName = 'TestUser_' + Math.floor(Math.random() * 1000);  // Random first name\r",
+							"const randomLastName = 'RandomLastName_' + Math.floor(Math.random() * 1000);  // Random last name\r",
+							"const randomPhoneNumber = '0664' + Math.floor(Math.random() * 10000000);  // Random phone number\r",
+							"const newPerson = {\r",
+							"    firstName: randomFirstName,\r",
+							"    lastName: randomLastName,\r",
+							"    telephones: [\r",
+							"        {\r",
+							"            countyCode: \"AT\",\r",
+							"            number: randomPhoneNumber\r",
+							"        }\r",
+							"    ]\r",
+							"};\r",
+							"\r",
+							"// Send a request to create a new person\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get('baseUrl') + '/person',\r",
+							"    method: 'POST',\r",
+							"    header: {\r",
+							"        'Authorization': 'Basic ' + btoa(username + ':' + password),\r",
+							"        'Content-Type': 'application/json'\r",
+							"    },\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify(newPerson)\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    if (err) {\r",
+							"        console.error('Failed to create a new person:', err);\r",
+							"    } else {\r",
+							"        console.log('Created person:', res.json());\r",
+							"        const createdPerson = res.json();\r",
+							"\r",
+							"        // Set the phone number and person ID of the created person as collection variables\r",
+							"        pm.collectionVariables.set('phoneNumber', createdPerson.telephones[0].number);\r",
+							"        pm.collectionVariables.set('personId', createdPerson.id);\r",
+							"    }\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"\r",
+							"// Retrieve the phoneNumber set in the collection variable\r",
+							"const phoneNumber = pm.collectionVariables.get('phoneNumber');\r",
+							"\r",
+							"// Parse the response body as JSON\r",
+							"const responseData = pm.response.json();\r",
+							"\r",
+							"// Validate the status code\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Validate that the returned user matches the created user\r",
+							"pm.test(\"Returned user matches the created user by phone number\", function () {\r",
+							"    pm.expect(responseData).to.be.an('array');  // Ensure that a person array is returned\r",
+							"    pm.expect(responseData.length).to.be.above(0);  // Ensure that at least one person is returned\r",
+							"\r",
+							"    const returnedUser = responseData.find(user => user.telephones.some(phone => phone.number === phoneNumber));\r",
+							"    pm.expect(returnedUser).to.be.an('object');  // Ensure that a matching user is found\r",
+							"\r",
+							"    // Validate first name, last name, and telephone details\r",
+							"    pm.expect(returnedUser.firstName).to.include('TestUser_');\r",
+							"    pm.expect(returnedUser.lastName).to.include('RandomLastName_');\r",
+							"    pm.expect(returnedUser.telephones.length).to.eql(1);\r",
+							"    \r",
+							"    const telephone = returnedUser.telephones[0];\r",
+							"    pm.expect(telephone.countyCode).to.eql(\"AT\");\r",
+							"    pm.expect(telephone.number).to.eql(phoneNumber);\r",
+							"});\r",
+							"// Retrieve the personId set in the collection variable\r",
+							"const personId = pm.collectionVariables.get('personId');\r",
+							"\r",
+							"// Send a request to delete the created person\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get('baseUrl') + '/person/' + personId + '/delete',\r",
+							"    method: 'DELETE',\r",
+							"    header: {\r",
+							"        'Authorization': 'Basic ' + btoa(username + ':' + password)\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    if (err) {\r",
+							"        console.error('Failed to delete the created person:', err);\r",
+							"    } else {\r",
+							"        console.log('Deleted person with ID:', personId);\r",
+							"        pm.test(\"Person deleted successfully\", function () {\r",
+							"            pm.response.to.have.status(200);  // Validate that the delete operation was successful\r",
+							"        });\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/person/findByNumber/{{phoneNumber}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"person",
+						"findByNumber",
+						"{{phoneNumber}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Unauthorized call",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'Wronguser';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"\r",
+							"// Validate that the status code is 401 Unauthorized\r",
+							"pm.test(\"Status code is 401 for unauthorized call\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/person/findByNumber/{{phoneNumber}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"person",
+						"findByNumber",
+						"{{phoneNumber}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find By Phone Number OR First Name OR Last Name",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"// Define random data for creating a new person with unique variable names\r",
+							"const randomFName = 'RandFName_' + Math.floor(Math.random() * 1000);  // Random first name\r",
+							"const randomLName = 'RandLName_' + Math.floor(Math.random() * 1000);  // Random last name\r",
+							"const randomPNumber = '0664' + Math.floor(1000000 + Math.random() * 9000000);  // Random 7-digit phone number\r",
+							"const newPersonData = {\r",
+							"    firstName: randomFName,\r",
+							"    lastName: randomLName,\r",
+							"    telephones: [\r",
+							"        {\r",
+							"            countyCode: \"AT\",\r",
+							"            number: randomPNumber\r",
+							"        }\r",
+							"    ]\r",
+							"};\r",
+							"\r",
+							"// Send a request to create a new person\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get('baseUrl') + '/person',\r",
+							"    method: 'POST',\r",
+							"    header: {\r",
+							"        'Authorization': 'Basic ' + btoa(username + ':' + password),\r",
+							"        'Content-Type': 'application/json'\r",
+							"    },\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify(newPersonData)\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    if (err) {\r",
+							"        console.error('Failed to create a new person:', err);\r",
+							"    } else {\r",
+							"        console.log('Created person:', res.json());\r",
+							"        const createdPersonData = res.json();\r",
+							"\r",
+							"        // Set the first name, last name, phone number, and person ID of the created person as collection variables\r",
+							"        pm.collectionVariables.set('RandFirstName', createdPersonData.firstName);\r",
+							"        pm.collectionVariables.set('RandLastName', createdPersonData.lastName);\r",
+							"        pm.collectionVariables.set('RandPhoneNumber', createdPersonData.telephones[0].number);\r",
+							"        pm.collectionVariables.set('UniquePersonID', createdPersonData.id);\r",
+							"\r",
+							"        // Randomly pick one of the attributes (first name, last name, or phone number) to be the search term\r",
+							"        const attributeOptions = [\r",
+							"            { type: 'firstName', value: createdPersonData.firstName },\r",
+							"            { type: 'lastName', value: createdPersonData.lastName },\r",
+							"            { type: 'phoneNumber', value: createdPersonData.telephones[0].number }\r",
+							"        ];\r",
+							"        const chosenAttribute = attributeOptions[Math.floor(Math.random() * attributeOptions.length)];\r",
+							"\r",
+							"        // Set the search term based on the chosen attribute\r",
+							"        pm.collectionVariables.set('searchTermsa', chosenAttribute.value);\r",
+							"\r",
+							"        // Log the chosen attribute type and value\r",
+							"        console.log(`Selected search attribute is ${chosenAttribute.type} with value: ${chosenAttribute.value}`);\r",
+							"    }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"\r",
+							"// Retrieve the collection variables set in the pre-request script\r",
+							"const selectedFirstName = pm.collectionVariables.get('RandFirstName');\r",
+							"const selectedLastName = pm.collectionVariables.get('RandLastName');\r",
+							"const selectedPhoneNumber = pm.collectionVariables.get('RandPhoneNumber');\r",
+							"const selectedPersonId = pm.collectionVariables.get('UniquePersonID');\r",
+							"const chosenSearchTerm = pm.collectionVariables.get('searchTermsa');\r",
+							"\r",
+							"// Determine the type of search term (first name, last name, or phone number)\r",
+							"let searchTermType = '';\r",
+							"if (chosenSearchTerm === selectedFirstName) {\r",
+							"    searchTermType = 'first name';\r",
+							"} else if (chosenSearchTerm === selectedLastName) {\r",
+							"    searchTermType = 'last name';\r",
+							"} else if (chosenSearchTerm === selectedPhoneNumber) {\r",
+							"    searchTermType = 'phone number';\r",
+							"}\r",
+							"\r",
+							"// Parse the response body as JSON\r",
+							"const responseDataSearch = pm.response.json();\r",
+							"\r",
+							"// Validate the status code for the findByFirstNameOrLastNameOrPhoneNumber request\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Validate that the returned user matches the created user based on the selected search term\r",
+							"pm.test(`Returned user matches the created user by search term (${searchTermType}: ${chosenSearchTerm})`, function () {\r",
+							"    pm.expect(responseDataSearch).to.be.an('array');  // Ensure that a person array is returned\r",
+							"    pm.expect(responseDataSearch.length).to.be.above(0);  // Ensure that at least one person is returned\r",
+							"\r",
+							"    // Find the user with the matching attribute\r",
+							"    const returnedUserMatch = responseDataSearch.find(user =>\r",
+							"        user.firstName === chosenSearchTerm || user.lastName === chosenSearchTerm || user.telephones.some(phone => phone.number === chosenSearchTerm)\r",
+							"    );\r",
+							"    pm.expect(returnedUserMatch).to.be.an('object');  // Ensure that a matching user is found\r",
+							"\r",
+							"    // Validate first name, last name, and telephone details\r",
+							"    pm.expect(returnedUserMatch.firstName).to.include('RandFName_');\r",
+							"    pm.expect(returnedUserMatch.lastName).to.include('RandLName_');\r",
+							"    pm.expect(returnedUserMatch.telephones.length).to.eql(1);\r",
+							"    \r",
+							"    const phoneDetails = returnedUserMatch.telephones[0];\r",
+							"    pm.expect(phoneDetails.countyCode).to.eql(\"AT\");\r",
+							"    pm.expect(phoneDetails.number).to.eql(selectedPhoneNumber);\r",
+							"});\r",
+							"\r",
+							"// Cleanup: Send a request to delete the created person\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get('baseUrl') + '/person/' + selectedPersonId + '/delete',\r",
+							"    method: 'DELETE',\r",
+							"    header: {\r",
+							"        'Authorization': 'Basic ' + btoa(username + ':' + password)\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    if (err) {\r",
+							"        console.error('Failed to delete the created person:', err);\r",
+							"    } else {\r",
+							"        console.log('Deleted person with ID:', selectedPersonId);\r",
+							"        \r",
+							"    }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/person/findByFirstNameOrLastNameOrPhoneNumber/{{searchTermsa}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"person",
+						"findByFirstNameOrLastNameOrPhoneNumber",
+						"{{searchTermsa}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find By Partial Phone Number OR First Name OR Last Name",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"\r",
+							"// Parse the response body as JSON\r",
+							"let addPhoneResponse;\r",
+							"try {\r",
+							"    addPhoneResponse = pm.response.json();\r",
+							"} catch (e) {\r",
+							"    console.error('Response is not valid JSON:', e);\r",
+							"    pm.test('Response is not valid JSON', function () {\r",
+							"        pm.expect.fail('Response is not valid JSON');\r",
+							"    });\r",
+							"    return;  // Stop execution if response is not JSON\r",
+							"}\r",
+							"\r",
+							"// Validate the status code for the GET /person request\r",
+							"pm.test(\"Status code is 200 for person finding by partial search term\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/person/findByFirstNameOrLastNameOrPhoneNumber/{{PartialsearchTermsa}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"person",
+						"findByFirstNameOrLastNameOrPhoneNumber",
+						"{{PartialsearchTermsa}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Save Person",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response body as JSON and handle possible errors\r",
+							"let responseData;\r",
+							"try {\r",
+							"    responseData = pm.response.json();\r",
+							"} catch (e) {\r",
+							"    console.error('Response is not valid JSON:', e);\r",
+							"    pm.test('Response is not valid JSON', function () {\r",
+							"        pm.expect.fail('Response is not valid JSON');\r",
+							"    });\r",
+							"    return;  // Stop execution if response is not JSON\r",
+							"}\r",
+							"\r",
+							"// Validate the status code for the POST /person request\r",
+							"pm.test(\"Status code is 200 for person creation\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Validate that the returned person matches the created person\r",
+							"pm.test(\"Returned user matches the created user details\", function () {\r",
+							"    pm.expect(responseData).to.be.an('object');  // Ensure that a person object is returned\r",
+							"\r",
+							"    // Validate first name, last name, and telephone details\r",
+							"    pm.expect(responseData.firstName).to.include('testy'); \r",
+							"    pm.expect(responseData.lastName).to.include('testerman');  \r",
+							"    pm.expect(responseData.telephones.length).to.eql(1);\r",
+							"    \r",
+							"    const returnedTelephoneDetails = responseData.telephones[0];\r",
+							"    pm.expect(returnedTelephoneDetails.countyCode).to.eql(\"CO\");\r",
+							"    pm.expect(returnedTelephoneDetails.number).to.include('0665');  // Adjust this check as per your random number prefix\r",
+							"});\r",
+							"\r",
+							"// Retrieve the person ID from the response\r",
+							"const createdPersonId = responseData.id;\r",
+							"\r",
+							"// Ensure person ID is available before attempting to delete\r",
+							"if (!createdPersonId) {\r",
+							"    console.error('No person ID found in the response. Cannot delete the created person.');\r",
+							"    return;  // Stop execution if no person ID is found\r",
+							"}\r",
+							"\r",
+							"// Cleanup: Send a request to delete the created person\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get('baseUrl') + '/person/' + createdPersonId + '/delete',\r",
+							"    method: 'DELETE',\r",
+							"    header: {\r",
+							"        'Authorization': 'Basic ' + btoa('user' + ':' + 'password')  // Replace with actual credentials\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    if (err) {\r",
+							"        console.error('Failed to delete the created person:', err);\r",
+							"    } else {\r",
+							"        console.log('Deleted person with ID:', createdPersonId);\r",
+							"        \r",
+							"    }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "user",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"testy\",\r\n    \"lastName\": \"testerman\",\r\n    \"telephones\": [\r\n             {\r\n                \"countyCode\": \"CO\",\r\n                \"number\": \"06653226789\"\r\n            }\r\n        ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/person",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"person"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Person Info",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"// Retrieve the person ID set in the pre-request script\r",
+							"const personIdToUpdate = pm.collectionVariables.get('personToUpdate');\r",
+							"\r",
+							"// Parse the response body as JSON\r",
+							"let updatedPersonResponse;\r",
+							"try {\r",
+							"    updatedPersonResponse = pm.response.json();\r",
+							"} catch (e) {\r",
+							"    console.error('Response is not valid JSON:', e);\r",
+							"    pm.test('Response is not valid JSON', function () {\r",
+							"        pm.expect.fail('Response is not valid JSON');\r",
+							"    });\r",
+							"    return;  // Stop execution if response is not JSON\r",
+							"}\r",
+							"\r",
+							"// Validate the status code for the PUT /person request\r",
+							"pm.test(\"Status code is 200 for person update\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Validate that the returned user matches the updated user details\r",
+							"pm.test(\"Returned user matches the updated user details\", function () {\r",
+							"    pm.expect(updatedPersonResponse).to.be.an('object');  // Ensure that a person object is returned\r",
+							"\r",
+							"    // Validate first name and last name\r",
+							"    pm.expect(updatedPersonResponse.firstName).to.eql(\"Gerrard\");\r",
+							"    pm.expect(updatedPersonResponse.lastName).to.eql(\"Steve\");\r",
+							"\r",
+							"    // Validate telephone details ignoring the telephone IDs\r",
+							"    pm.expect(updatedPersonResponse.telephones.length).to.eql(2);\r",
+							"    pm.expect(updatedPersonResponse.telephones[0].countyCode).to.eql(\"PE\");\r",
+							"    pm.expect(updatedPersonResponse.telephones[0].number).to.eql(\"06633334489\");\r",
+							"    pm.expect(updatedPersonResponse.telephones[1].countyCode).to.eql(\"VE\");\r",
+							"    pm.expect(updatedPersonResponse.telephones[1].number).to.eql(\"066655566789\");\r",
+							"});\r",
+							"\r",
+							"// Cleanup: Send a request to delete the updated person\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get('baseUrl') + '/person/' + personIdToUpdate + '/delete',\r",
+							"    method: 'DELETE',\r",
+							"    header: {\r",
+							"        'Authorization': 'Basic ' + encodedCredentials  // Use encoded credentials from pre-request script\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    if (err) {\r",
+							"        console.error('Failed to delete the updated person:', err);\r",
+							"    } else {\r",
+							"        console.log('Deleted person with ID:', personIdToUpdate);\r",
+							"        \r",
+							"    }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"\r",
+							"// Define random data for creating a new person with unique variable names\r",
+							"const randomFirstNameCreate = 'InitialUser_' + Math.floor(Math.random() * 1000);  // Random first name\r",
+							"const randomLastNameCreate = 'InitialLName_' + Math.floor(Math.random() * 1000);  // Random last name\r",
+							"const randomPhoneNumberCreate = '0665' + Math.floor(1000000 + Math.random() * 9000000);  // Random 7-digit phone number\r",
+							"\r",
+							"const newPersonForUpdate = {\r",
+							"    firstName: randomFirstNameCreate,\r",
+							"    lastName: randomLastNameCreate,\r",
+							"    telephones: [\r",
+							"        {\r",
+							"            countyCode: \"CO\",\r",
+							"            number: randomPhoneNumberCreate\r",
+							"        }\r",
+							"    ]\r",
+							"};\r",
+							"\r",
+							"// Send a request to create a new random person\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get('baseUrl') + '/person',\r",
+							"    method: 'POST',\r",
+							"    header: {\r",
+							"        'Authorization': 'Basic ' + encodedCredentials,\r",
+							"        'Content-Type': 'application/json'\r",
+							"    },\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify(newPersonForUpdate)\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    if (err) {\r",
+							"        console.error('Failed to create a new person:', err);\r",
+							"    } else {\r",
+							"        console.log('Created person response:', res.text());\r",
+							"        const createdPersonResponse = res.json();\r",
+							"\r",
+							"        // Set the created person's ID as a collection variable for updating and deleting\r",
+							"        pm.collectionVariables.set('personToUpdate', createdPersonResponse.id);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"Gerrard\",\r\n    \"lastName\": \"Steve\",\r\n    \"telephones\": [\r\n        {\r\n            \"countyCode\": \"PE\",\r\n            \"number\": \"06633334489\"\r\n        },\r\n        {\r\n            \"countyCode\": \"VE\",\r\n            \"number\": \"066655566789\"\r\n        }\r\n    ]\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/person/{{personToUpdate}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"person",
+						"{{personToUpdate}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Phone Number",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"\r",
+							"// Define random data for creating a new person\r",
+							"const randomFirstNameCreate = 'InitialUser_' + Math.floor(Math.random() * 1000);  // Random first name\r",
+							"const randomLastNameCreate = 'InitialLName_' + Math.floor(Math.random() * 1000);  // Random last name\r",
+							"const randomPhoneNumberCreate = '0665' + Math.floor(1000000 + Math.random() * 9000000);  // Random 7-digit phone number\r",
+							"\r",
+							"const newPersonForAddingPhone = {\r",
+							"    firstName: randomFirstNameCreate,\r",
+							"    lastName: randomLastNameCreate,\r",
+							"    telephones: [\r",
+							"        {\r",
+							"            countyCode: \"CO\",\r",
+							"            number: randomPhoneNumberCreate\r",
+							"        }\r",
+							"    ]\r",
+							"};\r",
+							"\r",
+							"// Send a request to create a new random person\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get('baseUrl') + '/person',\r",
+							"    method: 'POST',\r",
+							"    header: {\r",
+							"        'Authorization': 'Basic ' + encodedCredentials,\r",
+							"        'Content-Type': 'application/json'\r",
+							"    },\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify(newPersonForAddingPhone)\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    if (err) {\r",
+							"        console.error('Failed to create a new person:', err);\r",
+							"    } else {\r",
+							"        console.log('Created person response:', res.text());\r",
+							"        const createdPersonResponse = res.json();\r",
+							"\r",
+							"        // Set the created person's ID as a collection variable for adding the phone number\r",
+							"        pm.collectionVariables.set('personToAddNumber', createdPersonResponse.id);\r",
+							"    }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"\r",
+							"// Retrieve the person ID and first name set in the pre-request script\r",
+							"const personIdToAddNumber = pm.collectionVariables.get('personToAddNumber');\r",
+							"const firstNameToDelete = pm.collectionVariables.get('InitialUser_FirstName');  // Use the first name that was set in the pre-request script\r",
+							"\r",
+							"// Parse the response body as JSON\r",
+							"let addPhoneResponse;\r",
+							"try {\r",
+							"    addPhoneResponse = pm.response.json();\r",
+							"} catch (e) {\r",
+							"    console.error('Response is not valid JSON:', e);\r",
+							"    pm.test('Response is not valid JSON', function () {\r",
+							"        pm.expect.fail('Response is not valid JSON');\r",
+							"    });\r",
+							"    return;  // Stop execution if response is not JSON\r",
+							"}\r",
+							"\r",
+							"// Validate the status code for the PUT /person/{{personToAddNumber}}/telephone request\r",
+							"pm.test(\"Status code is 200 for adding phone number\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Validate that the returned user details now include the new phone number\r",
+							"pm.test(\"Phone number was added successfully\", function () {\r",
+							"    pm.expect(addPhoneResponse).to.be.an('object');  // Ensure that a person object is returned\r",
+							"\r",
+							"    // Check that the new phone number is included\r",
+							"    const addedPhoneNumber = addPhoneResponse.telephones.find(phone => phone.number === \"0669513456789\");\r",
+							"    pm.expect(addedPhoneNumber).to.be.an('object');  // Ensure that the phone number was found\r",
+							"    pm.expect(addedPhoneNumber.countyCode).to.eql(\"AR\");\r",
+							"    pm.expect(addedPhoneNumber.number).to.eql(\"0669513456789\");\r",
+							"});\r",
+							"\r",
+							"// Cleanup: Send a request to delete the person after the phone number has been added\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get('baseUrl') + '/person/' + personIdToAddNumber + '/delete',\r",
+							"    method: 'DELETE',\r",
+							"    header: {\r",
+							"        'Authorization': 'Basic ' + encodedCredentials  // Use encoded credentials\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    if (err) {\r",
+							"        console.error('Failed to delete the person:', err);\r",
+							"    } else {\r",
+							"        console.log('Deleted person with ID:', personIdToAddNumber);\r",
+							"\r",
+							"        // Verify that the person was deleted successfully using the first name\r",
+							"        pm.sendRequest({\r",
+							"            url: pm.environment.get('baseUrl') + '/person/findByFirstName/' + firstNameToDelete,\r",
+							"            method: 'GET',\r",
+							"            header: {\r",
+							"                'Authorization': 'Basic ' + encodedCredentials  // Use encoded credentials\r",
+							"            }\r",
+							"        }, function (err, res) {\r",
+							"            if (err) {\r",
+							"                console.error('Failed to check if the person was deleted:', err);\r",
+							"            } else {\r",
+							"                console.log('Check delete response:', res.text());\r",
+							"                pm.test(\"Person is not found after deletion\", function () {\r",
+							"                    pm.expect(res.text()).to.eql('');  // Validate that the response body is an empty array (no person found)\r",
+							"                });\r",
+							"            }\r",
+							"        });\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "            {\r\n                \"countyCode\": \"AR\",\r\n                \"number\": \"0669513456789\"\r\n            }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/person/{{personToAddNumber}}/telephone",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"person",
+						"{{personToAddNumber}}",
+						"telephone"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Negative scenario Add Phone Number to non existent person",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"\r",
+							"// Use a non-existent UUID for testing\r",
+							"const nonExistentPersonId = '36273da6-cf92-cf92-cf92-6fa808848bce';\r",
+							"\r",
+							"// Define the expected error message\r",
+							"const expectedErrorMessage = `Person with ID ${nonExistentPersonId} not found.`;\r",
+							"\r",
+							"// Validate the status code is 404\r",
+							"pm.test(\"Status code is 404 for non-existent person\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"// Validate the error message in the response\r",
+							"pm.test(\"Correct error message for non-existent person\", function () {\r",
+							"    pm.expect(pm.response.text()).to.eql(expectedErrorMessage);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "            {\r\n                \"id\": \"36273da6-cf92-cf92-cf92-6fa808848bce\",\r\n                \"countyCode\": \"CO\",\r\n                \"number\": \"0664123456789\"\r\n            }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/person/{{idNonExistent}}/telephone",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"person",
+						"{{idNonExistent}}",
+						"telephone"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Negative scenario delete person non existent",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"\r",
+							"// Use a non-existent UUID for testing\r",
+							"const nonExistentPersonId = '36273da6-cf92-cf92-cf92-6fa808848bce';\r",
+							"\r",
+							"// Define the expected error message\r",
+							"const expectedErrorMessage = `Person with ID ${nonExistentPersonId} not found.`;\r",
+							"\r",
+							"// Validate the status code is 404\r",
+							"pm.test(\"Status code is 404 for non-existent person\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"// Validate the error message in the response\r",
+							"pm.test(\"Correct error message for non-existent person\", function () {\r",
+							"    pm.expect(pm.response.text()).to.eql(expectedErrorMessage);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/person/{{idNonExistent}}/delete",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"person",
+						"{{idNonExistent}}",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete telephone from person",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"\r",
+							"// Define random data for creating a new person with a telephone number\r",
+							"const randomFirstNameCreate = 'TestUser_' + Math.floor(Math.random() * 1000);  // Random first name\r",
+							"const randomLastNameCreate = 'TestLName_' + Math.floor(Math.random() * 1000);  // Random last name\r",
+							"const randomPhoneNumberCreate = '0665' + Math.floor(1000000 + Math.random() * 9000000);  // Random 7-digit phone number\r",
+							"\r",
+							"const newPersonWithNumber = {\r",
+							"    firstName: randomFirstNameCreate,\r",
+							"    lastName: randomLastNameCreate,\r",
+							"    telephones: [\r",
+							"        {\r",
+							"            countyCode: \"CO\",\r",
+							"            number: randomPhoneNumberCreate\r",
+							"        }\r",
+							"    ]\r",
+							"};\r",
+							"\r",
+							"// Send a request to create a new random person with a telephone number\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get('baseUrl') + '/person',\r",
+							"    method: 'POST',\r",
+							"    header: {\r",
+							"        'Authorization': 'Basic ' + encodedCredentials,\r",
+							"        'Content-Type': 'application/json'\r",
+							"    },\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify(newPersonWithNumber)\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    if (err) {\r",
+							"        console.error('Failed to create a new person:', err);\r",
+							"    } else {\r",
+							"        console.log('Created person response:', res.text());\r",
+							"        const createdPersonResponse = res.json();\r",
+							"\r",
+							"        // Set the person's ID as a collection variable\r",
+							"        pm.collectionVariables.set('personIDWithNumberToDelete', createdPersonResponse.id);\r",
+							"\r",
+							"        // Set the phone number ID to delete as a collection variable\r",
+							"        const phoneIDNumberToDelete = createdPersonResponse.telephones[0].id; // Get the first phone number ID\r",
+							"        pm.collectionVariables.set('phoneIDNumberToDelete', phoneIDNumberToDelete);\r",
+							"\r",
+							"        // Save the last name to validate the deletion\r",
+							"        pm.collectionVariables.set('lastNameToDelete', createdPersonResponse.lastName);\r",
+							"    }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"\r",
+							"// Retrieve the person ID, phone number ID, and last name set in the pre-request script\r",
+							"const personIDWithNumberToDelete = pm.collectionVariables.get('personIDWithNumberToDelete');\r",
+							"const phoneIDNumberToDelete = pm.collectionVariables.get('phoneIDNumberToDelete');\r",
+							"const lastNameToDelete = pm.collectionVariables.get('lastNameToDelete');\r",
+							"\r",
+							"// Validate that the phone number has been deleted\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get('baseUrl') + '/person/findByLastName/' + lastNameToDelete,\r",
+							"    method: 'GET',\r",
+							"    header: {\r",
+							"        'Authorization': 'Basic ' + encodedCredentials\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    if (err) {\r",
+							"        console.error('Failed to check the person after deleting phone number:', err);\r",
+							"    } else {\r",
+							"        console.log('Check person response:', res.text());\r",
+							"        const personResponse = res.json();\r",
+							"\r",
+							"        pm.test(\"Phone number was deleted successfully\", function () {\r",
+							"            const deletedPhoneNumber = personResponse.telephones.find(phone => phone.id === phoneIDNumberToDelete);\r",
+							"            pm.expect(deletedPhoneNumber).to.be.undefined;  // Ensure the phone number is not found\r",
+							"        });\r",
+							"\r",
+							"        // Cleanup: Send a request to delete the person\r",
+							"        pm.sendRequest({\r",
+							"            url: pm.environment.get('baseUrl') + '/person/' + personIDWithNumberToDelete + '/delete',\r",
+							"            method: 'DELETE',\r",
+							"            header: {\r",
+							"                'Authorization': 'Basic ' + encodedCredentials\r",
+							"            }\r",
+							"        }, function (err, res) {\r",
+							"            if (err) {\r",
+							"                console.error('Failed to delete the person:', err);\r",
+							"            } else {\r",
+							"                console.log('Deleted person with ID:', personIDWithNumberToDelete);\r",
+							"\r",
+							"                // Verify that the person was deleted successfully using the last name\r",
+							"                pm.sendRequest({\r",
+							"                    url: pm.environment.get('baseUrl') + '/person/findByLastName/' + lastNameToDelete,\r",
+							"                    method: 'GET',\r",
+							"                    header: {\r",
+							"                        'Authorization': 'Basic ' + encodedCredentials\r",
+							"                    }\r",
+							"                }, function (err, res) {\r",
+							"                    if (err) {\r",
+							"                        console.error('Failed to check if the person was deleted:', err);\r",
+							"                    } else {\r",
+							"                        console.log('Check delete response:', res.text());\r",
+							"                        pm.test(\"Person is not found after deletion\", function () {\r",
+							"                            pm.expect(res.text()).to.eql('');  // Validate that the response body is empty (no person found)\r",
+							"                        });\r",
+							"                    }\r",
+							"                });\r",
+							"            }\r",
+							"        });\r",
+							"    }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/person/{{personIDWithNumberToDelete}}/telephone/{{phoneIDNumberToDelete}}/delete",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"person",
+						"{{personIDWithNumberToDelete}}",
+						"telephone",
+						"{{phoneIDNumberToDelete}}",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete person",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"\r",
+							"// Retrieve the person ID and last name set in the pre-request script\r",
+							"const personToBeDeleted = pm.collectionVariables.get('personToBeDeleted');\r",
+							"const lastNameToDelete = pm.collectionVariables.get('lastNameToDelete');\r",
+							"\r",
+							"// Verify that the person was deleted successfully using the last name\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get('baseUrl') + '/person/findByLastName/' + lastNameToDelete,\r",
+							"    method: 'GET',\r",
+							"    header: {\r",
+							"        'Authorization': 'Basic ' + encodedCredentials\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    if (err) {\r",
+							"        console.error('Failed to check if the person was deleted:', err);\r",
+							"    } else {\r",
+							"        console.log('Check delete response:', res.text());\r",
+							"        pm.test(\"Person is not found after deletion\", function () {\r",
+							"            pm.expect(res.text()).to.eql('');  // Validate that the response body is empty (no person found)\r",
+							"        });\r",
+							"    }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Define username and password\r",
+							"const username = 'user';\r",
+							"const password = 'password';\r",
+							"\r",
+							"// Encode the credentials in Base64\r",
+							"const encodedCredentials = btoa(username + ':' + password);\r",
+							"\r",
+							"// Set the Authorization header\r",
+							"pm.request.headers.add({\r",
+							"    key: 'Authorization',\r",
+							"    value: 'Basic ' + encodedCredentials\r",
+							"});\r",
+							"\r",
+							"// Define random data for creating a new person\r",
+							"const randomFirstNameCreate = 'TestUser_' + Math.floor(Math.random() * 1000);  // Random first name\r",
+							"const randomLastNameCreate = 'TestLName_' + Math.floor(Math.random() * 1000);  // Random last name\r",
+							"\r",
+							"const newPerson = {\r",
+							"    firstName: randomFirstNameCreate,\r",
+							"    lastName: randomLastNameCreate,\r",
+							"    telephones: []\r",
+							"};\r",
+							"\r",
+							"// Send a request to create a new random person\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get('baseUrl') + '/person',\r",
+							"    method: 'POST',\r",
+							"    header: {\r",
+							"        'Authorization': 'Basic ' + encodedCredentials,\r",
+							"        'Content-Type': 'application/json'\r",
+							"    },\r",
+							"    body: {\r",
+							"        mode: 'raw',\r",
+							"        raw: JSON.stringify(newPerson)\r",
+							"    }\r",
+							"}, function (err, res) {\r",
+							"    if (err) {\r",
+							"        console.error('Failed to create a new person:', err);\r",
+							"    } else {\r",
+							"        console.log('Created person response:', res.text());\r",
+							"        const createdPersonResponse = res.json();\r",
+							"\r",
+							"        // Set the person's ID as a collection variable\r",
+							"        pm.collectionVariables.set('personToBeDeleted', createdPersonResponse.id);\r",
+							"\r",
+							"        // Save the last name to validate the deletion\r",
+							"        pm.collectionVariables.set('lastNameToDelete', createdPersonResponse.lastName);\r",
+							"    }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/person/{{personToBeDeleted}}/delete",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"person",
+						"{{personToBeDeleted}}",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "firstName",
+			"value": ""
+		},
+		{
+			"key": "lastName",
+			"value": ""
+		},
+		{
+			"key": "phoneNumber",
+			"value": ""
+		},
+		{
+			"key": "personId",
+			"value": ""
+		},
+		{
+			"key": "searchTerm",
+			"value": "0"
+		},
+		{
+			"key": "searchTerms",
+			"value": ""
+		},
+		{
+			"key": "searchTermsa",
+			"value": ""
+		},
+		{
+			"key": "firstName1",
+			"value": ""
+		},
+		{
+			"key": "lastName2",
+			"value": ""
+		},
+		{
+			"key": "RandFirstName",
+			"value": ""
+		},
+		{
+			"key": "RandLastName",
+			"value": ""
+		},
+		{
+			"key": "RandPhoneNumber",
+			"value": ""
+		},
+		{
+			"key": "UniquePersonID",
+			"value": ""
+		},
+		{
+			"key": "NewRandFirstName",
+			"value": ""
+		},
+		{
+			"key": "NewRandLastName",
+			"value": ""
+		},
+		{
+			"key": "NewRandPhoneNumber",
+			"value": ""
+		},
+		{
+			"key": "NewPersonID",
+			"value": ""
+		},
+		{
+			"key": "personToUpdate",
+			"value": ""
+		},
+		{
+			"key": "originalFirstName",
+			"value": ""
+		},
+		{
+			"key": "originalLastName",
+			"value": ""
+		},
+		{
+			"key": "originalPhoneNumber",
+			"value": ""
+		},
+		{
+			"key": "personToAddNumber",
+			"value": ""
+		},
+		{
+			"key": "PartialsearchTermsa",
+			"value": "must"
+		},
+		{
+			"key": "personIDWithNumberToDelete",
+			"value": ""
+		},
+		{
+			"key": "phoneIDNumberToDelete",
+			"value": ""
+		},
+		{
+			"key": "lastNameToDelete",
+			"value": ""
+		},
+		{
+			"key": "personToBeDeleted",
+			"value": ""
+		}
+	]
+}
