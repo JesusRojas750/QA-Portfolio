@@ -1,0 +1,21 @@
+#
+# GitLab CI configuration
+#
+# We reuse our common templates at:
+#   https://gitlab.skidata.net/gitlab/ci/ci-templates-common
+#
+include:
+  - project: "ci/ci-templates-common"
+    ref: master
+    file: "meta/generic-maven-java-11-docker.yml"
+
+variables:
+  MAVEN_SKIP_DEPENDENCY_CHECK: "false"
+
+#finalize:redeploy-devint-trunk:
+#  stage: finalize
+#  variables:
+#    RESTART_SERVICES: stp-sample-service
+#  trigger: setup/devint/setup-devint-stp-trunk
+#  rules:
+#    - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
